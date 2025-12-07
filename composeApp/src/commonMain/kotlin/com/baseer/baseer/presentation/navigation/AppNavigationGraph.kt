@@ -1,0 +1,85 @@
+package com.baseer.baseer.presentation.navigation
+
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.baseer.baseer.presentation.home.screen.HomeScreen
+import com.baseer.baseer.presentation.reportSelect.screen.ReportSelectionScreen
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppNavigationGraph() {
+
+    val navController = rememberNavController()
+    val scrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
+
+    Scaffold(
+        modifier = Modifier
+            .background(Color(0xFF111927))
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        containerColor = Color.Transparent,
+        contentColor = Color.Transparent,
+    ) { padding ->
+        Box {
+            NavHost(
+                modifier = Modifier.align(Alignment.TopCenter)
+                    .padding(
+                        bottom = padding.calculateBottomPadding(),
+                    ),
+                navController = navController,
+                startDestination = AppScreens.Home,
+                // Explicitly specifying transitions turns off default animations
+                // in favor of the selected ones
+                enterTransition = { fadeIn() + slideInHorizontally() },
+                exitTransition = { fadeOut() }
+            ) {
+
+                composable<AppScreens.Home> {
+                    HomeScreen(
+                        modifier = Modifier.padding(top = padding.calculateTopPadding()),
+                        onNavigateToReportSelection = {
+                            navController.navigate(AppScreens.ReportSelection)
+                        }
+                    )
+                }
+
+                composable<AppScreens.ReportSelection> {
+                    ReportSelectionScreen(
+                        modifier = Modifier.padding(top = padding.calculateTopPadding()),
+                        navController = navController
+                    )
+                }
+
+                composable<AppScreens.ReportDetails> { backStackEntry ->
+//            val args = backStackEntry.toRoute<AppScreens.ReportDetails>()
+//            val viewModel = koinViewModel<ReportDetailsViewModel>()
+//            ReportDetailsScreen(
+//                viewModel = viewModel,
+//                reportTypeId = args.reportTypeId,
+//                onNavigateBack = { navController.popBackStack() },
+//                onNavigateToSuccess = {
+//                    navController.navigate(AppScreens.ReportSuccess) {
+//                        popUpTo(AppScreens.Home) { inclusive = false }
+//                    }
+//                }
+//            )
+                }
+
+            }
+        }
+    }
+}

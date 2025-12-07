@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">Al Dafter</string>
+    <string name="report_type_header">Report Type</string>
+    <string name="report_type_fire">Fire</string>
+    <string name="report_type_conflict">Dispute</string>
+    <string name="report_type_broken_car">Broken-down vehicle</string>
+    <string name="report_type_reckless_driver">Reckless driver / drifting</string>
+    <string name="report_type_begging">Begging</string>
+    <string name="report_type_suspected_drugs">Suspected drugs</string>
+    <string name="report_type_harassment">Harassment</string>
+    <string name="report_type_theft">Theft</string>
+    <string name="report_screen_title">Report</string>
+    <string name="report_back">Back</string>
+
+    <string name="report_location_label">Location</string>
+    <string name="report_change_location">Change</string>
+
+    <string name="report_call_911">Call 911</string>
+
+    <string name="home_quick_access">Quick Access</string>
+    <string name="home_tab_citizen_id">Citizen ID</string>
+    <string name="home_tab_passport">Passport</string>
+    <string name="home_tab_driving_license">Driving License</string>
+    <string name="home_submit_report">Submit Report</string>
+    <string name="home_submit_report_subtitle">Fast reporting - traffic - emergency - incidents</string>
+    <string name="home_my_vehicles">My Vehicles</string>
+    <string name="home_my_vehicles_subtitle">View violations - renew ID - track requests</string>
+    <string name="home_authentication">Authentication Services</string>
+    <string name="home_absher_travel">Absher Travel</string>
+    <string name="home_traffic_violations">Traffic Violations</string>
+    <string name="home_simple_accident">Register Simple Accident</string>
+    <string name="home_my_weapons">My Weapons</string>
+    <string name="home_my_weapons_subtitle">View violations - renew license - weapon permits</string>
+
+    <string name="report_details_edit">Edit</string>
+    <string name="report_details_info_banner">
+        Your submitted report will now be reviewed thoroughly to ensure accuracy and accountability.
+    </string>
+    <string name="report_details_plate_number">Vehicle Plate Number</string>
+    <string name="report_details_description">Additional Description (Optional)</string>
+    <string name="report_details_description_placeholder">Enter any additional details…</string>
+    <string name="report_details_additional_info">Additional Information</string>
+    <string name="report_details_additional_info_placeholder">
+        Provide any information that may help responders handle your case more accurately.
+    </string>
+    <string name="report_details_add_image">Add Image (Optional)</string>
+    <string name="report_details_submit">Confirm &amp; Submit</string>
+    <string name="report_success_title">Report Submitted Successfully</string>
+    <string name="report_success_message">
+        Your report has been reviewed. You will be contacted as soon as possible.
+    </string>
+    <string name="report_success_home">Back to Home</string>
+    <string name="report_success_new_report">Submit New Report</string>
+</resources>

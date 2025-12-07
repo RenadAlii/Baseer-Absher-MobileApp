@@ -1,0 +1,52 @@
+<resources>
+    <string name="report_type_header">نوع البلاغ</string>
+    <string name="report_type_fire">حريق</string>
+    <string name="report_type_conflict">نزاع</string>
+    <string name="report_type_broken_car">سيارة متعطلة</string>
+    <string name="report_type_reckless_driver">سائق متهور / تفحيط</string>
+    <string name="report_type_begging">تسول</string>
+    <string name="report_type_suspected_drugs">اشتباه مخدرات</string>
+    <string name="report_type_harassment">تحرش</string>
+    <string name="report_type_theft">سرقة</string>
+    <string name="report_screen_title">بلّغ</string>
+    <string name="report_back">الرجوع</string>
+    <string name="report_location_label">الموقع</string>
+    <string name="report_change_location">تغيير</string>
+    <string name="report_call_911">اتصال 911</string>
+    <!-- Home Screen -->
+    <string name="home_quick_access">الوصول السريع</string>
+    <string name="home_tab_citizen_id">هوية مواطن</string>
+    <string name="home_tab_passport">جواز السفر</string>
+    <string name="home_tab_driving_license">رخصة سياقة</string>
+    <string name="home_submit_report">تقديم بلاغ</string>
+    <string name="home_submit_report_subtitle">تقديم سريع - مرورى - استغاثه - بلاغ</string>
+    <string name="home_my_vehicles">مركباتي</string>
+    <string name="home_my_vehicles_subtitle">عرض المخالفات - تجديد الهوية - الاستعلام عن معاملة</string>
+    <string name="home_authentication">خدمات التوثيق</string>
+    <string name="home_absher_travel">أبشر سفر</string>
+    <string name="home_traffic_violations">المخالفات المرورية</string>
+    <string name="home_simple_accident">تسجيل حادث بسيط</string>
+    <string name="home_my_weapons">أسلحتي</string>
+    <string name="home_my_weapons_subtitle">عرض المخالفات - تجديد الرخصة وتجديد رخص السلاح</string>
+
+    <!-- Report Details Screen -->
+    <string name="report_details_edit">تعديل</string>
+    <string name="report_details_info_banner">سيتم الآن التحقق من البلاغ المُقدم وفق الإجراءات الكاملة والنظرية لضمان
+        صحتها للمُساءلة
+    </string>
+    <string name="report_details_plate_number">رقم لوحة السيارة</string>
+    <string name="report_details_description">وصف إضافي (اختياري)</string>
+    <string name="report_details_description_placeholder">أدخل أي تفاصيل إضافية...</string>
+    <string name="report_details_additional_info">معلومات إضافية</string>
+    <string name="report_details_additional_info_placeholder">أدخل أي معلومات إضافية قد تساعد المباشر في معالجتك بشكل
+        أدق
+    </string>
+    <string name="report_details_add_image">إضافة صورة (اختياري)</string>
+    <string name="report_details_submit">تأكيد وإرسال</string>
+
+    <!-- Report Success Screen -->
+    <string name="report_success_title">تم إرسال البلاغ بنجاح</string>
+    <string name="report_success_message">سيتم مراجعة البلاغ والتواصل معك في أقرب وقت</string>
+    <string name="report_success_home">العودة للرئيسية</string>
+    <string name="report_success_new_report">تقديم بلاغ جديد</string>
+</resources>
