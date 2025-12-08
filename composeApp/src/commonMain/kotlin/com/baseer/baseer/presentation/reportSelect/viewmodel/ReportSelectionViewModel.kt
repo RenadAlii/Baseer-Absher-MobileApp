@@ -1,60 +1,87 @@
 package com.baseer.baseer.presentation.reportSelect.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.baseer.baseer.presentation.components.model.ReportType
+import androidx.lifecycle.viewModelScope
+import com.baseer.baseer.domain.model.LocationData
+import com.baseer.baseer.domain.service.GeocoderService
 import com.baseer.baseer.presentation.reportSelect.screen.ReportSelectionEvent
 import com.baseer.baseer.presentation.reportSelect.screen.ReportSelectionState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.baseer.baseer.presentation.utils.PhoneDialer
+import dev.icerock.moko.geo.LocationTracker
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
-class ReportSelectionViewModel : ViewModel() {
+class ReportSelectionViewModel(
+    private val geocoderService: GeocoderService,
+    private val phoneDialer: PhoneDialer
+) : ViewModel() {
 
     private val _state = MutableStateFlow(ReportSelectionState())
     val state: StateFlow<ReportSelectionState> = _state.asStateFlow()
 
-    // Navigation events
-    private var _navigationEvent: ((ReportSelectionNavigation) -> Unit)? = null
+    private var locationTracker: LocationTracker? = null
 
-    fun setNavigationHandler(handler: (ReportSelectionNavigation) -> Unit) {
-        _navigationEvent = handler
+    fun setLocationTracker(tracker: LocationTracker) {
+        locationTracker = tracker
+        loadLocation()
     }
 
     fun onEvent(event: ReportSelectionEvent) {
         when (event) {
-            ReportSelectionEvent.OnBackClick -> navigateBack()
-            ReportSelectionEvent.OnLocationEditClick -> navigateToLocationPicker()
-            is ReportSelectionEvent.OnReportTypeClick -> onReportTypeClick(event.reportType)
+            ReportSelectionEvent.LoadLocation -> loadLocation()
+            ReportSelectionEvent.OnLocationEditClick -> onLocationEditClick()
             ReportSelectionEvent.OnCall911Click -> call911()
             ReportSelectionEvent.OnErrorShown -> clearError()
         }
     }
 
-    private fun navigateBack() {
-        _navigationEvent?.invoke(ReportSelectionNavigation.Back)
+    private fun loadLocation() {
+        val tracker = locationTracker ?: return
+
+        viewModelScope.launch {
+            _state.update { it.copy(isLoadingLocation = true, error = null) }
+
+            try {
+                tracker.startTracking()
+                val latLng = tracker.getLocationsFlow().first()
+                tracker.stopTracking()
+
+                // Get address from coordinates
+                val address = geocoderService.getAddressFromCoordinates(
+                    latitude = latLng.latitude,
+                    longitude = latLng.longitude
+                )
+
+                _state.update {
+                    it.copy(
+                        location = LocationData(
+                            latitude = latLng.latitude,
+                            longitude = latLng.longitude,
+                            address = address
+                        ),
+                        isLoadingLocation = false
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isLoadingLocation = false,
+                        error = e.message ?: "فشل في تحديد الموقع"
+                    )
+                }
+            }
+        }
     }
 
-    private fun navigateToLocationPicker() {
-        _navigationEvent?.invoke(ReportSelectionNavigation.ToLocationPicker)
-    }
-
-    private fun onReportTypeClick(reportType: ReportType) {
-        _navigationEvent?.invoke(ReportSelectionNavigation.ToReportDetails(reportType.id))
+    private fun onLocationEditClick() {
+        // TODO: Navigate to map picker
     }
 
     private fun call911() {
-        _navigationEvent?.invoke(ReportSelectionNavigation.Call911)
+        phoneDialer.dial("911")
     }
 
     private fun clearError() {
         _state.update { it.copy(error = null) }
     }
-}
-
-sealed interface ReportSelectionNavigation {
-    data object Back : ReportSelectionNavigation
-    data object ToLocationPicker : ReportSelectionNavigation
-    data class ToReportDetails(val reportTypeId: String) : ReportSelectionNavigation
-    data object Call911 : ReportSelectionNavigation
 }

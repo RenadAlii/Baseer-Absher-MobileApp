@@ -2,8 +2,25 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
     <dict>
+        <!-- High refresh rate -->
         <key>CADisableMinimumFrameDurationOnPhone</key>
         <true/>
+
+        <!-- RTL language support -->
+        <key>CFBundleLocalizations</key>
+        <array>
+            <string>en</string>
+            <string>ar</string> <!-- Arabic -->
+            <string>he</string> <!-- Hebrew -->
+        </array>
+
+        <!-- Compose requirements -->
+        <key>UIApplicationSupportsIndirectInputEvents</key>
+        <true/>
+        <key>UIViewControllerBasedStatusBarAppearance</key>
+        <false/>
+
+        <!-- Location permissions -->
         <key>NSLocationWhenInUseUsageDescription</key>
         <string>We need your location to show nearby places</string>
         <key>NSLocationAlwaysUsageDescription</key>

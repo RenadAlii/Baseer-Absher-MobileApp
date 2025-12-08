@@ -53,6 +53,9 @@ kotlin {
             implementation(libs.ktor.client.logging)
 
             implementation(libs.koin.core)
+            implementation(libs.koin.annotations)
+            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.koin.compose)
 
             // Settings / local key-value
             implementation(libs.multiplatform.settings)
@@ -66,7 +69,7 @@ kotlin {
             implementation(libs.moko.permissions)
             implementation(libs.moko.permissions.compose)
             implementation(libs.moko.permissions.location)
-            implementation(libs.maplibre.compose)
+//            implementation(libs.maplibre.compose)
 
             // ✅ Coil Compose (يدعم KMP)
             implementation(libs.coil.compose)

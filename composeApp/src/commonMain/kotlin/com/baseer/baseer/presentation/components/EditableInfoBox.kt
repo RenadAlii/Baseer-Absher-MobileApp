@@ -1,7 +1,6 @@
 package com.baseer.baseer.presentation.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -18,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import baseer.composeapp.generated.resources.Res
 import baseer.composeapp.generated.resources.ic_pin_location
+import com.baseer.baseer.presentation.utils.extensions.noRippleEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -35,7 +35,7 @@ fun EditableInfoBox(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onEditClick() },
+            .noRippleEffect { onEditClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
