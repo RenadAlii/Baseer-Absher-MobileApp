@@ -114,7 +114,7 @@ private fun LocationPickerContent(
             )
 
             if (state.searchResults.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(2.dp))
                 SearchResults(
                     results = state.searchResults,
                     onResultClick = { location ->
@@ -234,14 +234,14 @@ private fun SearchResults(
     onResultClick: (LocationData) -> Unit
 ) {
     Card(
+        modifier = Modifier.padding(horizontal = 24.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.85f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(150.dp)
         ) {
             items(
                 items = results,
