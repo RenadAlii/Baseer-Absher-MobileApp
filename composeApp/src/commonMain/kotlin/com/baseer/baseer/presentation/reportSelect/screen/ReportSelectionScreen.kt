@@ -1,23 +1,10 @@
 package com.baseer.baseer.presentation.reportSelect.screen
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,25 +18,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import baseer.composeapp.generated.resources.Res
-import baseer.composeapp.generated.resources.button_locate
-import baseer.composeapp.generated.resources.button_open_settings
-import baseer.composeapp.generated.resources.ic_pin_location
-import baseer.composeapp.generated.resources.location_loading
-import baseer.composeapp.generated.resources.permission_denied_always
-import baseer.composeapp.generated.resources.permission_required
-import baseer.composeapp.generated.resources.report_call_911
-import baseer.composeapp.generated.resources.report_change_location
-import baseer.composeapp.generated.resources.report_location_label
-import baseer.composeapp.generated.resources.report_screen_title
-import baseer.composeapp.generated.resources.report_type_header
+import baseer.composeapp.generated.resources.*
 import com.baseer.baseer.domain.model.LocationData
 import com.baseer.baseer.presentation.components.EditableInfoBox
+import com.baseer.baseer.presentation.components.PrimaryButton
 import com.baseer.baseer.presentation.components.TopMainAppBar
 import com.baseer.baseer.presentation.navigation.AppScreens
 import com.baseer.baseer.presentation.reportSelect.componenets.ReportTypeItem
 import com.baseer.baseer.presentation.reportSelect.viewmodel.ReportSelectionViewModel
-import com.baseer.baseer.presentation.utils.OnAppResumed // 🔥
+import com.baseer.baseer.presentation.utils.OnAppResumed
 import dev.icerock.moko.geo.compose.BindLocationTrackerEffect
 import dev.icerock.moko.geo.compose.LocationTrackerAccuracy
 import dev.icerock.moko.geo.compose.rememberLocationTrackerFactory
@@ -156,7 +133,14 @@ private fun ReportSelectionContent(
             )
         },
         bottomBar = {
-            Call911Button(onClick = { onEvent(ReportSelectionEvent.OnCall911Click) })
+            PrimaryButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                text = stringResource(Res.string.report_call_911)
+            ) {
+                onEvent(ReportSelectionEvent.OnCall911Click)
+            }
         }
     ) { paddingValues ->
         LazyColumn(
@@ -189,7 +173,6 @@ private fun ReportSelectionContent(
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
                     modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.End
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -301,26 +284,5 @@ private fun LocationPermissionCard(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun Call911Button(
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .height(56.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Text(
-            text = stringResource(Res.string.report_call_911),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
     }
 }

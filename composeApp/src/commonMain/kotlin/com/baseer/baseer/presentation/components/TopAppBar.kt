@@ -1,7 +1,9 @@
 package com.baseer.baseer.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -10,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import baseer.composeapp.generated.resources.Res
 import baseer.composeapp.generated.resources.ic_arrow_right
@@ -37,7 +38,6 @@ fun TopMainAppBar(
                     Modifier.background(backgroundColor)
                 }
             )
-            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         // Back button — aligned start
         Row(
@@ -48,13 +48,12 @@ fun TopMainAppBar(
                 Icon(
                     painter = painterResource(Res.drawable.ic_arrow_right),
                     contentDescription = null,
-                    tint = Color(0xFF2E7D32)
+                    tint = Color(0xFF067647)
                 )
                 if (withBackText) {
-                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = stringResource(Res.string.report_back),
-                        color = Color(0xFF2E7D32),
+                        color = Color(0xFF067647),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )
@@ -62,12 +61,11 @@ fun TopMainAppBar(
             }
         }
 
-        // Center title — always perfectly centered
         Text(
             text = title,
-            fontSize = 20.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black,
+            color = Color(0xFF161616),
             modifier = Modifier.align(Alignment.Center)
         )
     }

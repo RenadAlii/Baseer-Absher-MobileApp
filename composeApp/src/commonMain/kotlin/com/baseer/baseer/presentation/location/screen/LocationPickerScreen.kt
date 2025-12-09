@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import baseer.composeapp.generated.resources.*
 import com.baseer.baseer.domain.model.LocationData
+import com.baseer.baseer.presentation.components.PrimaryButton
 import com.baseer.baseer.presentation.components.TopMainAppBar
 import com.baseer.baseer.presentation.location.viewmodel.LatLng
 import com.baseer.baseer.presentation.location.viewmodel.LocationPickerEvent
@@ -132,11 +132,12 @@ private fun LocationPickerContent(
                 .padding(start = 16.dp, bottom = 100.dp)
         )
 
-        ConfirmButton(
+        PrimaryButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(16.dp),
             isLoading = state.isLoadingAddress,
+            text = stringResource(Res.string.location_picker_confirm),
             onClick = { onEvent(LocationPickerEvent.OnConfirmClick) }
         )
     }
@@ -150,9 +151,9 @@ private fun FloatingMyLocationButton(
     FloatingActionButton(
         onClick = onClick,
         modifier = modifier
-            .padding(start = 16.dp, bottom = 100.dp),
+            .padding(start = 16.dp, bottom = 50.dp),
         containerColor = Color.White,
-        contentColor = Color(0x602E7D32) // استخدام لون الثيم الأخضر
+        contentColor = Color(0x602E7D32)
     ) {
         Image(
             painter = painterResource(Res.drawable.ic_locating),
@@ -172,6 +173,7 @@ private fun SearchBox(
     onClearClick: () -> Unit
 ) {
     Card(
+        modifier = Modifier.padding(horizontal = 24.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.85f)),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -183,11 +185,10 @@ private fun SearchBox(
             placeholder = {
                 Text(
                     text = stringResource(Res.string.location_picker_search_hint),
-                    textAlign = TextAlign.End,
                     modifier = Modifier.fillMaxWidth()
                 )
             },
-            leadingIcon = {
+            trailingIcon = {
                 if (query.isNotEmpty()) {
                     IconButton(onClick = onClearClick) {
                         Image(
@@ -197,7 +198,7 @@ private fun SearchBox(
                     }
                 }
             },
-            trailingIcon = {
+            leadingIcon = {
                 if (isSearching) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),
@@ -216,7 +217,9 @@ private fun SearchBox(
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color.Transparent,
                 unfocusedBorderColor = Color.Transparent,
-                cursorColor = Color(0xFF2E7D32)
+                cursorColor = Color(0xFF2E7D32),
+                focusedContainerColor = Color.White.copy(alpha = 0.85f),
+                unfocusedContainerColor = Color.White.copy(alpha = 0.85f),
             ),
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -270,34 +273,3 @@ private fun SearchResults(
     }
 }
 
-@Composable
-private fun ConfirmButton(
-    isLoading: Boolean,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .height(56.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)),
-        shape = RoundedCornerShape(12.dp),
-        enabled = !isLoading
-    ) {
-        if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(24.dp),
-                strokeWidth = 2.dp,
-                color = Color.White
-            )
-        } else {
-            Text(
-                text = stringResource(Res.string.location_picker_confirm),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
-}

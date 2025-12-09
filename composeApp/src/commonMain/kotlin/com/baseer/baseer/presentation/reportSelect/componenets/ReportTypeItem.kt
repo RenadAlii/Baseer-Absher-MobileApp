@@ -1,6 +1,7 @@
 package com.baseer.baseer.presentation.reportSelect.componenets
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,7 +36,7 @@ fun ReportTypeItem(
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
-        border = BorderStroke(1.dp, Color(0xFFE0E0E0))
+        border = BorderStroke(0.5.dp, Color(0xFF9DA4AE))
     ) {
         Row(
             modifier = Modifier
@@ -58,7 +59,7 @@ fun ReportTypeItem(
 
                 Text(
                     text = title,
-                    color = Color.Black,
+                    color = Color(0xFF000000),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -66,7 +67,7 @@ fun ReportTypeItem(
             }
             Spacer(modifier = Modifier.weight(1f))
 
-            Icon(
+            Image(
                 painter = painterResource(Res.drawable.ic_arrow_left),
                 contentDescription = null,
             )

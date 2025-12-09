@@ -1,11 +1,11 @@
 package com.baseer.baseer.presentation.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,19 +28,18 @@ fun EditableInfoBox(
     value: String,
     buttonText: String = "تعديل",
     icon: Painter,
-    iconTint: Color = Color(0xFF2E7D32),
-    buttonColor: Color = Color(0xFF2E7D32),
+    buttonColor: Color = Color(0xFF074D31),
     onEditClick: () -> Unit
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .noRippleEffect { onEditClick() },
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
-        border = BorderStroke(1.dp, Color(0xFFE0E0E0))
+        border = BorderStroke(1.dp, Color(0xFF9DA4AE))
     ) {
         Row(
             modifier = Modifier
@@ -57,10 +56,9 @@ fun EditableInfoBox(
             ) {
 
 
-                Icon(
+                Image(
                     painter = icon,
                     contentDescription = title,
-                    tint = iconTint,
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -75,7 +73,7 @@ fun EditableInfoBox(
                         text = value,
                         color = Color.Black,
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
+                        fontWeight = FontWeight.Normal,
                     )
                 }
 
@@ -85,7 +83,7 @@ fun EditableInfoBox(
                 text = buttonText,
                 color = buttonColor,
                 fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.SemiBold
             )
         }
     }

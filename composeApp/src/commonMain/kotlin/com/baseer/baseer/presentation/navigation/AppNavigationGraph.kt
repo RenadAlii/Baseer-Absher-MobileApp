@@ -3,7 +3,6 @@ package com.baseer.baseer.presentation.navigation
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBarDefaults
@@ -31,7 +30,6 @@ fun AppNavigationGraph() {
 
     Scaffold(
         modifier = Modifier
-            .background(Color(0xFF111927))
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         containerColor = Color.Transparent,
         contentColor = Color.Transparent,
