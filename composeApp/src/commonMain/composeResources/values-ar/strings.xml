@@ -53,4 +53,10 @@
     <string name="location_picker_title">موقع البلاغ</string>
     <string name="location_picker_search_hint">ابحث عن موقع...</string>
     <string name="location_picker_confirm">اختيار</string>
+
+    <string name="location_loading">جاري تحديد الموقع...</string>
+    <string name="permission_required">يرجى السماح بالوصول للموقع</string>
+    <string name="permission_denied_always">تم رفض الوصول للموقع بشكل دائم. يرجى تفعيل الموقع من الإعدادات.</string>
+    <string name="button_locate">تحديد الموقع</string>
+    <string name="button_open_settings">فتح الإعدادات</string>
 </resources>

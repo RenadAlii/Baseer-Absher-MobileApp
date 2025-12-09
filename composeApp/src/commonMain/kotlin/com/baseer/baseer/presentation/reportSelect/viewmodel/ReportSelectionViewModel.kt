@@ -8,7 +8,11 @@ import com.baseer.baseer.presentation.reportSelect.screen.ReportSelectionEvent
 import com.baseer.baseer.presentation.reportSelect.screen.ReportSelectionState
 import com.baseer.baseer.presentation.utils.PhoneDialer
 import dev.icerock.moko.geo.LocationTracker
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ReportSelectionViewModel(
@@ -20,6 +24,7 @@ class ReportSelectionViewModel(
     val state: StateFlow<ReportSelectionState> = _state.asStateFlow()
 
     private var locationTracker: LocationTracker? = null
+
     fun setLocationTracker(tracker: LocationTracker) {
         locationTracker = tracker
         loadLocation()
@@ -47,14 +52,17 @@ class ReportSelectionViewModel(
                 tracker.startTracking()
                 val latLng = tracker.getLocationsFlow().first()
                 tracker.stopTracking()
-                val address = geocoderService.getAddressFromCoordinates(
-                    latitude = latLng.latitude,
-                    longitude = latLng.longitude
-                )
                 val trackedLocation = LocationData(
                     latitude = latLng.latitude,
                     longitude = latLng.longitude,
-                    address = address
+                    address = null
+                )
+
+                _state.update { it.copy(currentTrackingLocation = trackedLocation) }
+
+                val address = geocoderService.getAddressFromCoordinates(
+                    latitude = latLng.latitude,
+                    longitude = latLng.longitude
                 )
 
                 _state.update {
@@ -64,8 +72,7 @@ class ReportSelectionViewModel(
                             longitude = latLng.longitude,
                             address = address
                         ),
-                        isLoadingLocation = false,
-                        currentTrackingLocation = trackedLocation
+                        isLoadingLocation = false
                     )
                 }
             } catch (e: Exception) {

@@ -54,4 +54,11 @@
     <string name="location_picker_title">Select Location</string>
     <string name="location_picker_search_hint">Search for a location...</string>
     <string name="location_picker_confirm">Confirm</string>
+
+
+    <string name="location_loading">Locating...</string>
+    <string name="permission_required">Please allow location access</string>
+    <string name="permission_denied_always">Location access permanently denied. Please enable location in Settings.</string>
+    <string name="button_locate">Locate</string>
+    <string name="button_open_settings">Open Settings</string>
 </resources>
