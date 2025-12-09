@@ -1,5 +1,8 @@
 package com.baseer.baseer.domain.service
 
+import com.baseer.baseer.domain.model.LocationData
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.useContents
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.CoreLocation.CLGeocoder
 import platform.CoreLocation.CLLocation
@@ -26,6 +29,33 @@ class GeocoderServiceImpl : GeocoderService {
             continuation.resume(address)
         }
     }
+
+    @OptIn(ExperimentalForeignApi::class)
+    override suspend fun searchLocations(query: String): List<LocationData> =
+        suspendCancellableCoroutine { continuation ->
+            val geocoder = CLGeocoder()
+
+            geocoder.geocodeAddressString(query) { placemarks, error ->
+                if (error != null) {
+                    continuation.resume(emptyList())
+                    return@geocodeAddressString
+                }
+
+                val results = placemarks?.mapNotNull { item ->
+                    val placemark = item as? CLPlacemark ?: return@mapNotNull null
+                    val location = placemark.location ?: return@mapNotNull null
+
+                    location.coordinate.useContents {
+                        LocationData(
+                            latitude = latitude,
+                            longitude = longitude,
+                            address = formatAddress(placemark)
+                        )
+                    }
+                } ?: emptyList()
+                continuation.resume(results)
+            }
+        }
 
     private fun formatAddress(placemark: CLPlacemark): String {
         val streetNumber = placemark.subThoroughfare

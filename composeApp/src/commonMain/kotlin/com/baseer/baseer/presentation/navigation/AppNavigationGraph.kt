@@ -17,7 +17,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.baseer.baseer.presentation.home.screen.HomeScreen
+import com.baseer.baseer.presentation.location.screen.LocationPickerScreen
 import com.baseer.baseer.presentation.reportSelect.screen.ReportSelectionScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,6 +63,29 @@ fun AppNavigationGraph() {
                     ReportSelectionScreen(
                         modifier = Modifier.padding(top = padding.calculateTopPadding()),
                         navController = navController
+                    )
+                }
+
+                composable<AppScreens.LocationPicker> { backStackEntry ->
+                    val args = backStackEntry.toRoute<AppScreens.LocationPicker>()
+
+                    LocationPickerScreen(
+                        modifier = Modifier.padding(top = padding.calculateTopPadding()),
+                        initialLatitude = args.selectedLatitude,
+                        initialLongitude = args.selectedLongitude,
+                        initialAddress = args.selectedAddress,
+                        currentLocatingLatitude = args.currentLocatingLatitude,
+                        currentLocatingLongitude = args.currentLocatingLongitude,
+                        currentLocatingAddress = args.currentLocatingAddress,
+                        onLocationConfirmed = { location ->
+                            navController.previousBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("selected_location", location)
+                            navController.popBackStack()
+                        },
+                        onBackClick = {
+                            navController.popBackStack()
+                        }
                     )
                 }
 

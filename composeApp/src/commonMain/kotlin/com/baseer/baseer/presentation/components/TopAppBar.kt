@@ -22,14 +22,22 @@ import org.jetbrains.compose.resources.stringResource
 fun TopMainAppBar(
     title: String,
     modifier: Modifier = Modifier,
+    withBackText: Boolean = true,
+    backgroundColor: Color = Color(0xFFF5F5F5),
     onBackClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFF5F5F5))
-            .padding(horizontal = 16.dp, vertical = 12.dp)
             .then(modifier)
+            .then(
+                if (backgroundColor == Color.Transparent) {
+                    Modifier
+                } else {
+                    Modifier.background(backgroundColor)
+                }
+            )
+            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         // Back button — aligned start
         Row(
@@ -42,13 +50,15 @@ fun TopMainAppBar(
                     contentDescription = null,
                     tint = Color(0xFF2E7D32)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(Res.string.report_back),
-                    color = Color(0xFF2E7D32),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
-                )
+                if (withBackText) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(Res.string.report_back),
+                        color = Color(0xFF2E7D32),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
         }
 

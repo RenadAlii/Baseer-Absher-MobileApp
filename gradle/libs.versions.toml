@@ -1,4 +1,6 @@
 [versions]
+maps-compose = "6.12.2"
+play-services-maps = "18.2.0"
 # === Build Tools ===
 agp = "8.10.1"
 kotlin = "2.2.21"
@@ -102,8 +104,8 @@ moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "mok
 moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "mokoPermissions" }
 moko-permissions-location = { module = "dev.icerock.moko:permissions-location", version.ref = "mokoPermissions" }
 
-# === MapLibre ===
-maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version = "0.12.1" }
+maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "maps-compose" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "play-services-maps" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

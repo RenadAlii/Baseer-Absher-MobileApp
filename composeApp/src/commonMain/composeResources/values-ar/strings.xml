@@ -49,4 +49,8 @@
     <string name="report_success_message">سيتم مراجعة البلاغ والتواصل معك في أقرب وقت</string>
     <string name="report_success_home">العودة للرئيسية</string>
     <string name="report_success_new_report">تقديم بلاغ جديد</string>
+
+    <string name="location_picker_title">موقع البلاغ</string>
+    <string name="location_picker_search_hint">ابحث عن موقع...</string>
+    <string name="location_picker_confirm">اختيار</string>
 </resources>

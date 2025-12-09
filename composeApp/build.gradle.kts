@@ -69,9 +69,9 @@ kotlin {
             implementation(libs.moko.permissions)
             implementation(libs.moko.permissions.compose)
             implementation(libs.moko.permissions.location)
-//            implementation(libs.maplibre.compose)
+            implementation(libs.maps.compose)
+            implementation(libs.play.services.maps)
 
-            // ✅ Coil Compose (يدعم KMP)
             implementation(libs.coil.compose)
         }
 

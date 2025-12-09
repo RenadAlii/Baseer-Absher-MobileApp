@@ -5,7 +5,8 @@ import com.baseer.baseer.presentation.components.model.ReportType
 
 data class ReportSelectionState(
     val location: LocationData? = null,
+    val currentTrackingLocation: LocationData? = null,
     val reportTypes: List<ReportType> = ReportType.all,
     val isLoadingLocation: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
 )

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import baseer.composeapp.generated.resources.*
+import com.baseer.baseer.domain.model.LocationData
 import com.baseer.baseer.presentation.components.EditableInfoBox
 import com.baseer.baseer.presentation.components.TopMainAppBar
 import com.baseer.baseer.presentation.navigation.AppScreens
@@ -57,21 +58,34 @@ fun ReportSelectionScreen(
     }
     BindLocationTrackerEffect(locationTracker)
 
-    // Request permission and set tracker
-    LaunchedEffect(locationTracker) {
-        try {
-            permissionsController.providePermission(Permission.LOCATION)
-            viewModel.setLocationTracker(locationTracker)
-        } catch (e: Exception) {
-            // Permission denied
+    // Request permission and load location
+    LaunchedEffect(locationTracker, state.location) {
+        if (state.location == null) {
+            try {
+                permissionsController.providePermission(Permission.LOCATION)
+                viewModel.setLocationTracker(locationTracker)
+            } catch (e: Exception) {
+                // Permission denied
+            }
         }
     }
 
-    // Snackbar
+    // Listen for location updates from LocationPicker
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+    LaunchedEffect(savedStateHandle) {
+        savedStateHandle?.getStateFlow<LocationData?>("selected_location", null)
+            ?.collect { location ->
+                location?.let {
+                    viewModel.updateLocation(it)
+                    savedStateHandle.remove<LocationData>("selected_location")
+                }
+            }
+    }
+
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(state.error) {
-        state.error?.let {
-            snackbarHostState.showSnackbar(it)
+        state.error?.let { error ->
+            snackbarHostState.showSnackbar(error)
             viewModel.onEvent(ReportSelectionEvent.OnErrorShown)
         }
     }
@@ -81,17 +95,34 @@ fun ReportSelectionScreen(
         snackbarHostState = snackbarHostState,
         modifier = modifier,
         onEvent = viewModel::onEvent,
-        navController = navController
+        onNavigateToLocationPicker = { location ->
+            navController.navigate(
+                AppScreens.LocationPicker(
+                    selectedLatitude = location.latitude,
+                    selectedLongitude = location.longitude,
+                    selectedAddress = location.address,
+                    currentLocatingLatitude = state.currentTrackingLocation?.latitude,
+                    currentLocatingLongitude = state.currentTrackingLocation?.longitude,
+                    currentLocatingAddress = state.currentTrackingLocation?.address
+                )
+            )
+        },
+        onNavigateToReportDetails = { reportTypeId ->
+            navController.navigate(AppScreens.ReportDetails(reportTypeId))
+        },
+        onBackClick = { navController.popBackStack() }
     )
 }
 
 @Composable
 private fun ReportSelectionContent(
-    navController: NavController,
     state: ReportSelectionState,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
-    onEvent: (ReportSelectionEvent) -> Unit
+    onEvent: (ReportSelectionEvent) -> Unit,
+    onNavigateToLocationPicker: (LocationData) -> Unit,
+    onNavigateToReportDetails: (String) -> Unit,
+    onBackClick: () -> Unit
 ) {
     Scaffold(
         containerColor = Color(0xFFF5F5F5),
@@ -99,10 +130,9 @@ private fun ReportSelectionContent(
         topBar = {
             TopMainAppBar(
                 modifier = modifier,
-                title = stringResource(Res.string.report_screen_title)
-            ) {
-                navController.popBackStack()
-            }
+                title = stringResource(Res.string.report_screen_title),
+                onBackClick = onBackClick
+            )
         },
         bottomBar = {
             Call911Button(onClick = { onEvent(ReportSelectionEvent.OnCall911Click) })
@@ -117,16 +147,18 @@ private fun ReportSelectionContent(
         ) {
             item { Spacer(modifier = Modifier.height(8.dp)) }
 
-            // Location Box
+            // Location Section
             item {
                 LocationSection(
                     state = state,
-                    onEditClick = { onEvent(ReportSelectionEvent.OnLocationEditClick) },
+                    onEditClick = {
+                        state.location?.let { onNavigateToLocationPicker(it) }
+                    },
                     onRetryClick = { onEvent(ReportSelectionEvent.LoadLocation) }
                 )
             }
 
-            // Section Title
+            // Report Type Header
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -135,12 +167,10 @@ private fun ReportSelectionContent(
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
                     modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.End
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // Report Types
             items(
                 items = state.reportTypes,
                 key = { it.id }
@@ -148,9 +178,7 @@ private fun ReportSelectionContent(
                 ReportTypeItem(
                     title = stringResource(reportType.titleRes),
                     icon = painterResource(reportType.icon),
-                    onClick = {
-                        navController.navigate(AppScreens.ReportDetails(reportType.id))
-                    }
+                    onClick = { onNavigateToReportDetails(reportType.id) }
                 )
             }
 
@@ -158,7 +186,6 @@ private fun ReportSelectionContent(
         }
     }
 }
-
 @Composable
 private fun LocationSection(
     state: ReportSelectionState,
@@ -179,7 +206,7 @@ private fun LocationSection(
         state.location != null -> {
             EditableInfoBox(
                 title = stringResource(Res.string.report_location_label),
-                value = state.location.address ?: "${state.location.latitude}, ${state.location.longitude}",
+                value = state.location.displayText,
                 buttonText = stringResource(Res.string.report_change_location),
                 icon = painterResource(Res.drawable.ic_pin_location),
                 onEditClick = onEditClick
@@ -187,39 +214,49 @@ private fun LocationSection(
         }
 
         else -> {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "يرجى السماح بالوصول للموقع",
-                        fontSize = 14.sp,
-                        color = Color(0xFFE65100),
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Button(
-                        onClick = onRetryClick,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE65100)),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(text = "تحديد الموقع")
-                    }
-                }
-            }
+            LocationPermissionCard(onRetryClick = onRetryClick)
         }
     }
 }
 
 @Composable
-private fun Call911Button(onClick: () -> Unit) {
+private fun LocationPermissionCard(
+    onRetryClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "يرجى السماح بالوصول للموقع",
+                fontSize = 14.sp,
+                color = Color(0xFFE65100),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                onClick = onRetryClick,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE65100)),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(text = "تحديد الموقع")
+            }
+        }
+    }
+}
+@Composable
+private fun Call911Button(
+    onClick: () -> Unit
+) {
     Button(
         onClick = onClick,
         modifier = Modifier

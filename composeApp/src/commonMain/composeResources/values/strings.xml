@@ -51,4 +51,7 @@
     </string>
     <string name="report_success_home">Back to Home</string>
     <string name="report_success_new_report">Submit New Report</string>
+    <string name="location_picker_title">Select Location</string>
+    <string name="location_picker_search_hint">Search for a location...</string>
+    <string name="location_picker_confirm">Confirm</string>
 </resources>

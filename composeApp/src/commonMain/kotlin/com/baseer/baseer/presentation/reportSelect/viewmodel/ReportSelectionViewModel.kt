@@ -20,16 +20,18 @@ class ReportSelectionViewModel(
     val state: StateFlow<ReportSelectionState> = _state.asStateFlow()
 
     private var locationTracker: LocationTracker? = null
-
     fun setLocationTracker(tracker: LocationTracker) {
         locationTracker = tracker
         loadLocation()
     }
 
+    fun updateLocation(location: LocationData) {
+        _state.update { it.copy(location = location) }
+    }
+
     fun onEvent(event: ReportSelectionEvent) {
         when (event) {
             ReportSelectionEvent.LoadLocation -> loadLocation()
-            ReportSelectionEvent.OnLocationEditClick -> onLocationEditClick()
             ReportSelectionEvent.OnCall911Click -> call911()
             ReportSelectionEvent.OnErrorShown -> clearError()
         }
@@ -45,11 +47,14 @@ class ReportSelectionViewModel(
                 tracker.startTracking()
                 val latLng = tracker.getLocationsFlow().first()
                 tracker.stopTracking()
-
-                // Get address from coordinates
                 val address = geocoderService.getAddressFromCoordinates(
                     latitude = latLng.latitude,
                     longitude = latLng.longitude
+                )
+                val trackedLocation = LocationData(
+                    latitude = latLng.latitude,
+                    longitude = latLng.longitude,
+                    address = address
                 )
 
                 _state.update {
@@ -59,7 +64,8 @@ class ReportSelectionViewModel(
                             longitude = latLng.longitude,
                             address = address
                         ),
-                        isLoadingLocation = false
+                        isLoadingLocation = false,
+                        currentTrackingLocation = trackedLocation
                     )
                 }
             } catch (e: Exception) {
@@ -71,10 +77,6 @@ class ReportSelectionViewModel(
                 }
             }
         }
-    }
-
-    private fun onLocationEditClick() {
-        // TODO: Navigate to map picker
     }
 
     private fun call911() {
