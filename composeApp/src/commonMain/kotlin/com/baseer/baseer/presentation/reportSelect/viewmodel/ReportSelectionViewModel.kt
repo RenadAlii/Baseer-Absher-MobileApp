@@ -8,6 +8,10 @@ import com.baseer.baseer.presentation.reportSelect.screen.ReportSelectionEvent
 import com.baseer.baseer.presentation.reportSelect.screen.ReportSelectionState
 import com.baseer.baseer.presentation.utils.PhoneDialer
 import dev.icerock.moko.geo.LocationTracker
+import dev.icerock.moko.permissions.Permission
+import dev.icerock.moko.permissions.PermissionState
+import dev.icerock.moko.permissions.PermissionsController
+import dev.icerock.moko.permissions.location.LOCATION
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,11 +28,7 @@ class ReportSelectionViewModel(
     val state: StateFlow<ReportSelectionState> = _state.asStateFlow()
 
     private var locationTracker: LocationTracker? = null
-
-    fun setLocationTracker(tracker: LocationTracker) {
-        locationTracker = tracker
-        loadLocation()
-    }
+    private var permissionsController: PermissionsController? = null
 
     fun updateLocation(location: LocationData) {
         _state.update { it.copy(location = location) }
@@ -36,9 +36,39 @@ class ReportSelectionViewModel(
 
     fun onEvent(event: ReportSelectionEvent) {
         when (event) {
+            is ReportSelectionEvent.LoadLocationAndPermissions -> handlePermissionsAndLocation(event.permissionsController, event.locationTracker)
             ReportSelectionEvent.LoadLocation -> loadLocation()
             ReportSelectionEvent.OnCall911Click -> call911()
             ReportSelectionEvent.OnErrorShown -> clearError()
+        }
+    }
+
+    private fun handlePermissionsAndLocation(controller: PermissionsController, tracker: LocationTracker) {
+        permissionsController = controller
+        locationTracker = tracker
+
+        viewModelScope.launch {
+            val initialPermissionState = controller.getPermissionState(Permission.LOCATION)
+            _state.update { it.copy(locationPermissionState = initialPermissionState) }
+
+            if (_state.value.location == null) {
+                try {
+                    controller.providePermission(Permission.LOCATION)
+
+                    val currentState = controller.getPermissionState(Permission.LOCATION)
+                    _state.update { it.copy(locationPermissionState = currentState) }
+
+                    if (currentState == PermissionState.Granted) {
+                        loadLocation()
+                    }
+                } catch (e: Exception) {
+                    _state.update {
+                        it.copy(
+                            locationPermissionState = controller.getPermissionState(Permission.LOCATION)
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -52,18 +82,17 @@ class ReportSelectionViewModel(
                 tracker.startTracking()
                 val latLng = tracker.getLocationsFlow().first()
                 tracker.stopTracking()
-                val trackedLocation = LocationData(
-                    latitude = latLng.latitude,
-                    longitude = latLng.longitude,
-                    address = null
-                )
-
-                _state.update { it.copy(currentTrackingLocation = trackedLocation) }
 
                 val address = geocoderService.getAddressFromCoordinates(
                     latitude = latLng.latitude,
                     longitude = latLng.longitude
                 )
+                val trackedLocation = LocationData(
+                    latitude = latLng.latitude,
+                    longitude = latLng.longitude,
+                    address = address
+                )
+
 
                 _state.update {
                     it.copy(
@@ -72,7 +101,8 @@ class ReportSelectionViewModel(
                             longitude = latLng.longitude,
                             address = address
                         ),
-                        isLoadingLocation = false
+                        isLoadingLocation = false,
+                        currentTrackingLocation = trackedLocation,
                     )
                 }
             } catch (e: Exception) {

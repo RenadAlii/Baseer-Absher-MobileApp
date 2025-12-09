@@ -21,10 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,21 +49,16 @@ import com.baseer.baseer.presentation.components.TopMainAppBar
 import com.baseer.baseer.presentation.navigation.AppScreens
 import com.baseer.baseer.presentation.reportSelect.componenets.ReportTypeItem
 import com.baseer.baseer.presentation.reportSelect.viewmodel.ReportSelectionViewModel
-import com.baseer.baseer.presentation.utils.OnAppResumed
-import dev.icerock.moko.geo.LocationTracker
+import com.baseer.baseer.presentation.utils.OnAppResumed // 🔥
 import dev.icerock.moko.geo.compose.BindLocationTrackerEffect
 import dev.icerock.moko.geo.compose.LocationTrackerAccuracy
 import dev.icerock.moko.geo.compose.rememberLocationTrackerFactory
-import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionState
-import dev.icerock.moko.permissions.PermissionsController
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
-import dev.icerock.moko.permissions.location.LOCATION
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun ReportSelectionScreen(
@@ -75,7 +67,6 @@ fun ReportSelectionScreen(
     viewModel: ReportSelectionViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
 
     val permissionsFactory = rememberPermissionsControllerFactory()
     val permissionsController = remember(permissionsFactory) {
@@ -89,34 +80,13 @@ fun ReportSelectionScreen(
     }
     BindLocationTrackerEffect(locationTracker)
 
-    var locationPermissionState by remember { mutableStateOf(PermissionState.NotDetermined) }
-
-    val updatePermissionState: (PermissionState) -> Unit = remember {
-        { newState -> locationPermissionState = newState }
-    }
-
     LaunchedEffect(Unit) {
-        tryLoadLocation(
-            permissionsController = permissionsController,
-            locationTracker = locationTracker,
-            state = state,
-            viewModel = viewModel,
-            updateLocationPermissionState = updatePermissionState
-        )
+        viewModel.onEvent(ReportSelectionEvent.LoadLocationAndPermissions(permissionsController, locationTracker))
     }
 
     OnAppResumed {
-        scope.launch {
-            tryLoadLocation(
-                permissionsController = permissionsController,
-                locationTracker = locationTracker,
-                state = state,
-                viewModel = viewModel,
-                updateLocationPermissionState = updatePermissionState
-            )
-        }
+        viewModel.onEvent(ReportSelectionEvent.LoadLocationAndPermissions(permissionsController, locationTracker))
     }
-
 
     // Listen for location updates from LocationPicker
     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
@@ -130,6 +100,7 @@ fun ReportSelectionScreen(
             }
     }
 
+    // Snackbar
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(state.error) {
         state.error?.let { error ->
@@ -143,7 +114,7 @@ fun ReportSelectionScreen(
         snackbarHostState = snackbarHostState,
         modifier = modifier,
         onEvent = viewModel::onEvent,
-        locationPermissionState = locationPermissionState,
+        locationPermissionState = state.locationPermissionState,
         onNavigateToLocationPicker = { location ->
             navController.navigate(
                 AppScreens.LocationPicker(
@@ -161,32 +132,6 @@ fun ReportSelectionScreen(
         },
         onBackClick = { navController.popBackStack() }
     )
-}
-
-private suspend fun tryLoadLocation(
-    permissionsController: PermissionsController,
-    locationTracker: LocationTracker,
-    state: ReportSelectionState,
-    viewModel: ReportSelectionViewModel,
-    updateLocationPermissionState: (PermissionState) -> Unit
-) {
-    val initialPermissionState = permissionsController.getPermissionState(Permission.LOCATION)
-    updateLocationPermissionState(initialPermissionState)
-
-    if (state.location == null) {
-        try {
-            permissionsController.providePermission(Permission.LOCATION)
-
-            val currentState = permissionsController.getPermissionState(Permission.LOCATION)
-            updateLocationPermissionState(currentState)
-
-            if (currentState == PermissionState.Granted) {
-                viewModel.setLocationTracker(locationTracker)
-            }
-        } catch (e: Exception) {
-            updateLocationPermissionState(permissionsController.getPermissionState(Permission.LOCATION))
-        }
-    }
 }
 
 @Composable

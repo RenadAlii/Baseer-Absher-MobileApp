@@ -1,7 +1,16 @@
 package com.baseer.baseer.presentation.reportSelect.screen
 
+
+import dev.icerock.moko.geo.LocationTracker
+import dev.icerock.moko.permissions.PermissionsController
+
 sealed interface ReportSelectionEvent {
-    data object LoadLocation : ReportSelectionEvent
-    data object OnCall911Click : ReportSelectionEvent
-    data object OnErrorShown : ReportSelectionEvent
+    object LoadLocation : ReportSelectionEvent
+    object OnCall911Click : ReportSelectionEvent
+    object OnErrorShown : ReportSelectionEvent
+
+    data class LoadLocationAndPermissions(
+        val permissionsController: PermissionsController,
+        val locationTracker: LocationTracker
+    ) : ReportSelectionEvent
 }
