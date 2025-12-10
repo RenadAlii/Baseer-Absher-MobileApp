@@ -77,4 +77,20 @@
     <string name="button_confirm_send">تأكيد وإرسال</string>
     <string name="back">الرجوع</string>
     <string name="location_permission_settings_message">الرجاء الموافقة على الوصول للموقع من الإعدادات</string>
+
+    <string name="file_upload_title">المرفقات</string>
+    <string name="file_upload_optional">(اختياري)</string>
+    <string name="file_upload_browse">تصفح الصور</string>
+    <string name="file_upload_drag_drop">أختر صور للرفع</string>
+    <string name="file_upload_formats">png, jpeg</string>
+    <string name="file_type_not_supported">نوع الملف غير مدعوم</string>
+    <string name="file_too_large">حجم الصوره كبير جداً</string>
+    <string name="file_upload_failed">فشل رفع الصوره</string>
+    <string name="file_max_size_error">الحد الأقصى لحجم الصور %d ميجابايت</string>
+
+    <string name="file_picker_title">اختر مصدر الملف</string>
+    <string name="file_picker_photos">معرض الصور</string>
+    <string name="file_picker_photos_desc">اختر صور من الاستوديو</string>
+    <string name="file_picker_files">الملفات</string>
+    <string name="file_picker_files_desc">اختر ملفات PDF أو مستندات</string>
 </resources>

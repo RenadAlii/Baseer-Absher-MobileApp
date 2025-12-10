@@ -73,4 +73,20 @@
     <string name="button_confirm_send">Confirm and Send</string>
     <string name="back">Back</string>
     <string name="location_permission_settings_message">Please enable location access from Settings</string>
+
+    <string name="file_upload_title">Attachments</string>
+    <string name="file_upload_optional">(Optional)</string>
+    <string name="file_upload_browse">Browse Images</string>
+    <string name="file_upload_drag_drop">Select images to upload</string>
+    <string name="file_upload_formats">png, jpeg</string>
+    <string name="file_type_not_supported">Unsupported file type</string>
+    <string name="file_too_large">The image size is too large</string>
+    <string name="file_upload_failed">Image upload failed</string>
+    <string name="file_max_size_error">Maximum image size is %d MB</string>
+
+    <string name="file_picker_title">Select File Source</string>
+    <string name="file_picker_photos">Photo Gallery</string>
+    <string name="file_picker_photos_desc">Choose images from your gallery</string>
+    <string name="file_picker_files">Files</string>
+    <string name="file_picker_files_desc">Select PDF files or documents</string>
 </resources>

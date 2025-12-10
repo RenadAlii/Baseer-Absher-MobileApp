@@ -24,6 +24,7 @@ import com.baseer.baseer.presentation.components.AlertCard
 import com.baseer.baseer.presentation.components.AlertType
 import com.baseer.baseer.presentation.components.PrimaryButton
 import com.baseer.baseer.presentation.components.TopMainAppBar
+import com.baseer.baseer.presentation.components.fileupload.FileUploadSection
 import com.baseer.baseer.presentation.components.inlineHelper.HelperMessageType
 import com.baseer.baseer.presentation.components.keybord.DismissKeyboardOnClick
 import com.baseer.baseer.presentation.components.model.ReportType
@@ -33,6 +34,8 @@ import com.baseer.baseer.presentation.details.viewmodel.ReportDetailsEvent
 import com.baseer.baseer.presentation.details.viewmodel.ReportDetailsState
 import com.baseer.baseer.presentation.details.viewmodel.ReportDetailsViewModel
 import com.baseer.baseer.presentation.navigation.AppScreens
+import com.baseer.baseer.presentation.utils.PickerType
+import com.baseer.baseer.presentation.utils.rememberFilePickerLauncher
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -48,26 +51,26 @@ fun ReportDetailsScreen(
     val reportType = state.reportType
 
     LaunchedEffect(reportTypeId) {
-        viewModel.processEvent(ReportDetailsEvent.LoadInitialData(reportTypeId, initialLocation))
+        viewModel.onEvent(ReportDetailsEvent.LoadInitialData(reportTypeId, initialLocation))
     }
-
     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
     LaunchedEffect(savedStateHandle) {
         savedStateHandle?.getStateFlow<LocationData?>("selected_location", null)
             ?.collect { location ->
                 location?.let {
-                    viewModel.processEvent(ReportDetailsEvent.LocationUpdated(it))
+                    viewModel.onEvent(ReportDetailsEvent.LocationUpdated(it))
                     savedStateHandle.remove<LocationData>("selected_location")
                 }
             }
     }
+
 
     if (reportType != null) {
         ReportDetailsContent(
             state = state,
             reportType = reportType,
             modifier = modifier,
-            onEvent = viewModel::processEvent,
+            onEvent = viewModel::onEvent,
             onBackClick = { navController.popBackStack() },
             onEditLocationClick = { location ->
                 navController.navigate(
@@ -99,6 +102,10 @@ private fun ReportDetailsContent(
     onEditLocationClick: (LocationData) -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+
+    val filePicker = rememberFilePickerLauncher { files ->
+        onEvent(ReportDetailsEvent.FilesSelected(files))
+    }
 
     Scaffold(
         containerColor = Color(0xFFF5F5F5),
@@ -188,7 +195,24 @@ private fun ReportDetailsContent(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // todo add upload files secteing here
+                        FileUploadSection(
+                            files = state.files,
+                            canAddMore = state.canAddMoreFiles,
+                            maxFileSizeMb = state.maxFileSizeMb,
+                            allowedTypes = listOf(PickerType.PHOTOS),
+                            onBrowseClick = { pickerType ->
+                                when (pickerType) {
+                                    PickerType.PHOTOS -> filePicker.launchPhotos()
+                                    PickerType.FILES -> filePicker.launchFiles()
+                                }
+                            },
+                            onRemoveFile = { fileId ->
+                                onEvent(ReportDetailsEvent.RemoveFile(fileId))
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
                     }
                 }
             }
