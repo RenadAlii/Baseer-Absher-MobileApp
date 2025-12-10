@@ -12,7 +12,12 @@ sealed interface AppScreens {
     data object ReportSelection : AppScreens
 
     @Serializable
-    data class ReportDetails(val reportTypeId: String) : AppScreens
+    data class ReportDetails(
+        val reportTypeId: String,
+        val initialLatitude: Double,
+        val initialLongitude: Double,
+        val initialAddress: String? = null
+    ) : AppScreens
 
     @Serializable
     data class LocationPicker(
@@ -23,5 +28,6 @@ sealed interface AppScreens {
         val currentLocatingLongitude: Double?,
         val currentLocatingAddress: String?,
     ) : AppScreens
+
 
 }

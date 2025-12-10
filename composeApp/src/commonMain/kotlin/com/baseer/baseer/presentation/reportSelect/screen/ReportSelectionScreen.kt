@@ -3,26 +3,26 @@ package com.baseer.baseer.presentation.reportSelect.screen
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import baseer.composeapp.generated.resources.*
 import com.baseer.baseer.domain.model.LocationData
-import com.baseer.baseer.presentation.components.EditableInfoBox
 import com.baseer.baseer.presentation.components.PrimaryButton
 import com.baseer.baseer.presentation.components.TopMainAppBar
+import com.baseer.baseer.presentation.components.textField.LocationBox
 import com.baseer.baseer.presentation.navigation.AppScreens
 import com.baseer.baseer.presentation.reportSelect.componenets.ReportTypeItem
 import com.baseer.baseer.presentation.reportSelect.viewmodel.ReportSelectionViewModel
@@ -30,7 +30,6 @@ import com.baseer.baseer.presentation.utils.OnAppResumed
 import dev.icerock.moko.geo.compose.BindLocationTrackerEffect
 import dev.icerock.moko.geo.compose.LocationTrackerAccuracy
 import dev.icerock.moko.geo.compose.rememberLocationTrackerFactory
-import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import org.jetbrains.compose.resources.painterResource
@@ -91,7 +90,6 @@ fun ReportSelectionScreen(
         snackbarHostState = snackbarHostState,
         modifier = modifier,
         onEvent = viewModel::onEvent,
-        locationPermissionState = state.locationPermissionState,
         onNavigateToLocationPicker = { location ->
             navController.navigate(
                 AppScreens.LocationPicker(
@@ -105,7 +103,19 @@ fun ReportSelectionScreen(
             )
         },
         onNavigateToReportDetails = { reportTypeId ->
-            navController.navigate(AppScreens.ReportDetails(reportTypeId))
+            val selectedLocation = state.location
+            if (selectedLocation != null) {
+                navController.navigate(
+                    AppScreens.ReportDetails(
+                        reportTypeId = reportTypeId,
+                        initialLatitude = selectedLocation.latitude,
+                        initialLongitude = selectedLocation.longitude,
+                        initialAddress = selectedLocation.address
+                    )
+                )
+            } else {
+                viewModel.onEvent(ReportSelectionEvent.OnShowSnackbarError(Res.string.location_permission_settings_message))
+            }
         },
         onBackClick = { navController.popBackStack() }
     )
@@ -117,7 +127,6 @@ private fun ReportSelectionContent(
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     onEvent: (ReportSelectionEvent) -> Unit,
-    locationPermissionState: PermissionState,
     onNavigateToLocationPicker: (LocationData) -> Unit,
     onNavigateToReportDetails: (String) -> Unit,
     onBackClick: () -> Unit
@@ -152,19 +161,16 @@ private fun ReportSelectionContent(
         ) {
             item { Spacer(modifier = Modifier.height(8.dp)) }
 
-            // Location Section
             item {
-                LocationSection(
-                    state = state,
-                    locationPermissionState = locationPermissionState,
-                    onEditClick = {
-                        state.location?.let { onNavigateToLocationPicker(it) }
+                LocationBox(
+                    uiState = state.locationBoxUiState,
+                    onEditClick = { location ->
+                        onNavigateToLocationPicker(location)
                     },
                     onRetryClick = { onEvent(ReportSelectionEvent.LoadLocation) }
                 )
             }
 
-            // Report Type Header
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -189,100 +195,6 @@ private fun ReportSelectionContent(
             }
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
-        }
-    }
-}
-
-@Composable
-private fun LocationSection(
-    state: ReportSelectionState,
-    locationPermissionState: PermissionState,
-    onEditClick: () -> Unit,
-    onRetryClick: () -> Unit
-) {
-    when {
-        state.isLoadingLocation -> {
-            EditableInfoBox(
-                title = stringResource(Res.string.report_location_label),
-                value = stringResource(Res.string.location_loading),
-                buttonText = stringResource(Res.string.report_change_location),
-                icon = painterResource(Res.drawable.ic_pin_location),
-                onEditClick = { }
-            )
-        }
-
-        state.location != null -> {
-            EditableInfoBox(
-                title = stringResource(Res.string.report_location_label),
-                value = state.location.displayText,
-                buttonText = stringResource(Res.string.report_change_location),
-                icon = painterResource(Res.drawable.ic_pin_location),
-                onEditClick = onEditClick
-            )
-        }
-
-        else -> {
-            LocationPermissionCard(
-                onRetryClick = onRetryClick,
-                permissionState = locationPermissionState
-            )
-        }
-    }
-}
-
-@Composable
-private fun LocationPermissionCard(
-    onRetryClick: () -> Unit,
-    permissionState: PermissionState
-) {
-    val permissionsController = rememberPermissionsControllerFactory().createPermissionsController()
-
-    val action: () -> Unit = when (permissionState) {
-        PermissionState.DeniedAlways -> {
-            { permissionsController.openAppSettings() }
-        }
-        else -> {
-            onRetryClick
-        }
-    }
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = if (permissionState == PermissionState.DeniedAlways) {
-                    stringResource(Res.string.permission_denied_always)
-                } else {
-                    stringResource(Res.string.permission_required)
-                },
-                fontSize = 14.sp,
-                color = Color(0xFFE65100),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Button(
-                onClick = action,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE65100)),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(
-                    text = if (permissionState == PermissionState.DeniedAlways) {
-                        stringResource(Res.string.button_open_settings)
-                    } else {
-                        stringResource(Res.string.button_locate)
-                    },
-                )
-            }
         }
     }
 }

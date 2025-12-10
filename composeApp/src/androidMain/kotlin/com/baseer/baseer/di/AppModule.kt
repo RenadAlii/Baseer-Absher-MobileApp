@@ -2,6 +2,7 @@ package com.baseer.baseer.di
 
 import com.baseer.baseer.domain.service.GeocoderService
 import com.baseer.baseer.domain.service.GeocoderServiceImpl
+import com.baseer.baseer.presentation.details.viewmodel.ReportDetailsViewModel
 import com.baseer.baseer.presentation.location.viewmodel.LocationPickerViewModel
 import com.baseer.baseer.presentation.reportSelect.viewmodel.ReportSelectionViewModel
 import com.baseer.baseer.presentation.utils.PhoneDialer
@@ -18,5 +19,5 @@ val appModule = module {
     // ViewModels
     viewModelOf(::ReportSelectionViewModel)
     viewModelOf(::LocationPickerViewModel)
-
+    viewModelOf(::ReportDetailsViewModel)
 }

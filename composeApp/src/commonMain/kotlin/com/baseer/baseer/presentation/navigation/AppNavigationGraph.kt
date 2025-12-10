@@ -13,10 +13,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.baseer.baseer.domain.model.LocationData
+import com.baseer.baseer.presentation.components.topSnackbar.ObserveSnackbarEvent
+import com.baseer.baseer.presentation.components.topSnackbar.SnackbarController
+import com.baseer.baseer.presentation.components.topSnackbar.TopSnackbar
+import com.baseer.baseer.presentation.details.screen.ReportDetailsScreen
 import com.baseer.baseer.presentation.home.screen.HomeScreen
 import com.baseer.baseer.presentation.location.screen.LocationPickerScreen
 import com.baseer.baseer.presentation.reportSelect.screen.ReportSelectionScreen
@@ -88,21 +94,32 @@ fun AppNavigationGraph() {
                 }
 
                 composable<AppScreens.ReportDetails> { backStackEntry ->
-//            val args = backStackEntry.toRoute<AppScreens.ReportDetails>()
-//            val viewModel = koinViewModel<ReportDetailsViewModel>()
-//            ReportDetailsScreen(
-//                viewModel = viewModel,
-//                reportTypeId = args.reportTypeId,
-//                onNavigateBack = { navController.popBackStack() },
-//                onNavigateToSuccess = {
-//                    navController.navigate(AppScreens.ReportSuccess) {
-//                        popUpTo(AppScreens.Home) { inclusive = false }
-//                    }
-//                }
-//            )
+                    val args = backStackEntry.toRoute<AppScreens.ReportDetails>()
+
+                    val initialLocation = LocationData(
+                        latitude = args.initialLatitude,
+                        longitude = args.initialLongitude,
+                        address = args.initialAddress
+                    )
+
+                    ReportDetailsScreen(
+                        navController = navController,
+                        reportTypeId = args.reportTypeId,
+                        initialLocation = initialLocation,
+                        modifier = Modifier.padding(top = padding.calculateTopPadding()),
+                    )
                 }
 
             }
+            ObserveSnackbarEvent(
+                state = SnackbarController.event,
+                content = {
+                    TopSnackbar(
+                        it,
+                        modifier = Modifier.padding(8.dp).padding(top = padding.calculateTopPadding())
+                    )
+                }
+            )
         }
     }
 }

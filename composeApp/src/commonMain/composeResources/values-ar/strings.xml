@@ -56,7 +56,25 @@
 
     <string name="location_loading">جاري تحديد الموقع...</string>
     <string name="permission_required">يرجى السماح بالوصول للموقع</string>
-    <string name="permission_denied_always">تم رفض الوصول للموقع بشكل دائم. يرجى تفعيل الموقع من الإعدادات.</string>
+    <string name="permission_denied_always">تم رفض الوصول للموقع بشكل دائم. يرجى تفعيل الموقع من الإعدادات</string>
     <string name="button_locate">تحديد الموقع</string>
     <string name="button_open_settings">فتح الإعدادات</string>
+
+    <string name="report_alert_title">عند التأكيد سيتم إرسال البلاغ للجهات المعنية</string>
+    <string name="report_alert_description">البلاغات الكاذبة والكيدية تعرض صاحبها للمسائلة</string>
+    <string name="location_title">الموقع</string>
+    <string name="location_edit">تعديل</string>
+    <string name="location_change">تغيير</string>
+    <string name="plate_number_title">رقم لوحة السيارة</string>
+    <string name="plate_number_placeholder">أدخل رقم لوحة السيارة</string>
+    <string name="description_optional_title">وصف إضافي (اختياري)</string>
+    <string name="description_required_title">وصف إضافي</string>
+    <string name="description_placeholder">أدخل أي تفاصيل إضافية...</string>
+    <string name="description_helper_message">أدخل أي معلومات إضافية قد تساعد المباشر على مساعدتك بشكل أدق</string>
+    <string name="attachment_title">إضافة صورة (اختياري)</string>
+    <string name="attachment_formats">csv, pdf, png, jpeg</string>
+    <string name="attachment_browse">تصفح الملفات</string>
+    <string name="button_confirm_send">تأكيد وإرسال</string>
+    <string name="back">الرجوع</string>
+    <string name="location_permission_settings_message">الرجاء الموافقة على الوصول للموقع من الإعدادات</string>
 </resources>

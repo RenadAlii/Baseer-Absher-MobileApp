@@ -1,5 +1,8 @@
 package com.baseer.baseer.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class LocationData(
     val latitude: Double,
     val longitude: Double,

@@ -33,22 +33,16 @@
     <string name="home_my_weapons_subtitle">View violations - renew license - weapon permits</string>
 
     <string name="report_details_edit">Edit</string>
-    <string name="report_details_info_banner">
-        Your submitted report will now be reviewed thoroughly to ensure accuracy and accountability.
-    </string>
+    <string name="report_details_info_banner">Your submitted report will now be reviewed thoroughly to ensure accuracy and accountability</string>
     <string name="report_details_plate_number">Vehicle Plate Number</string>
     <string name="report_details_description">Additional Description (Optional)</string>
     <string name="report_details_description_placeholder">Enter any additional details…</string>
     <string name="report_details_additional_info">Additional Information</string>
-    <string name="report_details_additional_info_placeholder">
-        Provide any information that may help responders handle your case more accurately.
-    </string>
+    <string name="report_details_additional_info_placeholder">Provide any information that may help responders handle your case more accurately</string>
     <string name="report_details_add_image">Add Image (Optional)</string>
     <string name="report_details_submit">Confirm &amp; Submit</string>
     <string name="report_success_title">Report Submitted Successfully</string>
-    <string name="report_success_message">
-        Your report has been reviewed. You will be contacted as soon as possible.
-    </string>
+    <string name="report_success_message">Your report has been reviewed. You will be contacted as soon as possible</string>
     <string name="report_success_home">Back to Home</string>
     <string name="report_success_new_report">Submit New Report</string>
     <string name="location_picker_title">Select Location</string>
@@ -58,7 +52,25 @@
 
     <string name="location_loading">Locating...</string>
     <string name="permission_required">Please allow location access</string>
-    <string name="permission_denied_always">Location access permanently denied. Please enable location in Settings.</string>
+    <string name="permission_denied_always">Location access permanently denied. Please enable location in Settings</string>
     <string name="button_locate">Locate</string>
     <string name="button_open_settings">Open Settings</string>
+
+    <string name="report_alert_title">Upon confirmation, the report will be sent to the relevant authorities</string>
+    <string name="report_alert_description">False and malicious reports expose the sender to legal accountability</string>
+    <string name="location_title">Location</string>
+    <string name="location_edit">Edit</string>
+    <string name="location_change">Change</string>
+    <string name="plate_number_title">Vehicle Plate Number</string>
+    <string name="plate_number_placeholder">Enter vehicle plate number</string>
+    <string name="description_optional_title">Additional Description (Optional)</string>
+    <string name="description_required_title">Additional Description</string>
+    <string name="description_placeholder">Enter any additional details...</string>
+    <string name="description_helper_message">Enter any additional information that may help the dispatcher assist you more accurately</string>
+    <string name="attachment_title">Add Image (Optional)</string>
+    <string name="attachment_formats">csv, pdf, png, jpeg</string>
+    <string name="attachment_browse">Browse Files</string>
+    <string name="button_confirm_send">Confirm and Send</string>
+    <string name="back">Back</string>
+    <string name="location_permission_settings_message">Please enable location access from Settings</string>
 </resources>

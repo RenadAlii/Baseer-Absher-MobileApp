@@ -21,6 +21,7 @@ fun PrimaryButton(
     text: String,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
     Button(
@@ -31,7 +32,7 @@ fun PrimaryButton(
             .heightIn(min = 48.dp),
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B8354)),
         shape = RoundedCornerShape(4.dp),
-        enabled = !isLoading
+        enabled = enabled
     ) {
         if (isLoading) {
             CircularProgressIndicator(
