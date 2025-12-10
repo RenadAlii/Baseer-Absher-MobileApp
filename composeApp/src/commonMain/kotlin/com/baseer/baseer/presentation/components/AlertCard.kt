@@ -33,7 +33,7 @@ enum class AlertType {
 
 @Composable
 fun AlertCard(
-    title: String,
+    title: String?,
     description: String,
     type: AlertType = AlertType.INFO,
     modifier: Modifier = Modifier,
@@ -109,13 +109,14 @@ fun AlertCard(
                     .weight(1f)
                     .padding(vertical = 16.dp)
             ) {
+                title?.let {
                 Text(
                     text = title,
                     style = titleTextStyle,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Start
                 )
-
+            }
                 Spacer(modifier = Modifier.height(8.dp))
 
                 AnimatedVisibility(description.isNotBlank()) {
@@ -180,7 +181,7 @@ fun AlertCard(
 fun AlertCardInfoPreview() {
     Column(Modifier.padding(16.dp)) {
         AlertCard(
-            title = "عنوان رسالة الإشعار أو التنبيه",
+            title = null,
             description = "يكتب المحتوى الإضافي هنا في حال أن رسالة الإشعار أو التنبيه تحتاج إلى شرح أو تفصيل.",
             type = AlertType.INFO,
             actions = listOf("إجراء", "إجراء"),

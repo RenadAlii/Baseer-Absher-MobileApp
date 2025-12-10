@@ -462,7 +462,7 @@ private fun Modifier.dashedBorder(color: Color, radius: Dp) = drawBehind {
     drawRoundRect(
         color = color,
         style = Stroke(
-            width = 3f,
+            width = 4f,
             pathEffect = PathEffect.dashPathEffect(floatArrayOf(15f, 10f))
         ),
         cornerRadius = CornerRadius(radius.toPx())

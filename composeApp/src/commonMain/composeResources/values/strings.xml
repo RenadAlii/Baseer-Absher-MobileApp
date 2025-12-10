@@ -57,7 +57,7 @@
     <string name="button_open_settings">Open Settings</string>
 
     <string name="report_alert_title">Upon confirmation, the report will be sent to the relevant authorities</string>
-    <string name="report_alert_description">False and malicious reports expose the sender to legal accountability</string>
+    <string name="report_alert_description">Upon confirmation, the report will be sent to the relevant authorities, False and malicious reports expose the sender to legal accountability</string>
     <string name="location_title">Location</string>
     <string name="location_edit">Edit</string>
     <string name="location_change">Change</string>

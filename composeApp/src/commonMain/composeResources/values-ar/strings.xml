@@ -61,7 +61,7 @@
     <string name="button_open_settings">فتح الإعدادات</string>
 
     <string name="report_alert_title">عند التأكيد سيتم إرسال البلاغ للجهات المعنية</string>
-    <string name="report_alert_description">البلاغات الكاذبة والكيدية تعرض صاحبها للمسائلة</string>
+    <string name="report_alert_description">عند التأكيد سيتم إرسال البلاغ للجهات المعنية, البلاغات الكاذبة والكيدية تعرض صاحبها للمسائلة</string>
     <string name="location_title">الموقع</string>
     <string name="location_edit">تعديل</string>
     <string name="location_change">تغيير</string>

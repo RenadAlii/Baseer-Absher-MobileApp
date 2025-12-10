@@ -147,7 +147,7 @@ private fun ReportDetailsContent(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         AlertCard(
-                            title = stringResource(Res.string.report_alert_title),
+                            title = null,
                             description = stringResource(Res.string.report_alert_description),
                             type = AlertType.DANGER,
                             showClose = false,
