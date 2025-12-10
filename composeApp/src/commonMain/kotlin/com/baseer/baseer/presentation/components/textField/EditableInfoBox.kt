@@ -1,4 +1,4 @@
-package com.baseer.baseer.presentation.components
+package com.baseer.baseer.presentation.components.textField
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import baseer.composeapp.generated.resources.Res
@@ -66,13 +67,14 @@ fun EditableInfoBox(
                 Column {
                     Text(
                         text = title,
-                        color = Color.Gray,
-                        fontSize = 12.sp
+                        color = Color(0xFF9CA3AF),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
                     )
                     Text(
                         text = value,
-                        color = Color.Black,
-                        fontSize = 16.sp,
+                        color = Color(0xFF111827),
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                     )
                 }

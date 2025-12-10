@@ -48,12 +48,12 @@ fun TopMainAppBar(
                 Icon(
                     painter = painterResource(Res.drawable.ic_arrow_right),
                     contentDescription = null,
-                    tint = Color(0xFF067647)
+                    tint = Color(0xFF1B8354)
                 )
                 if (withBackText) {
                     Text(
                         text = stringResource(Res.string.report_back),
-                        color = Color(0xFF067647),
+                        color = Color(0xFF1B8354),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )

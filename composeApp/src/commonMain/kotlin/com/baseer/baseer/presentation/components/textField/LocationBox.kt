@@ -12,7 +12,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import baseer.composeapp.generated.resources.*
 import com.baseer.baseer.domain.model.LocationData
-import com.baseer.baseer.presentation.components.EditableInfoBox
 import com.baseer.baseer.presentation.components.model.LocationBoxUiState
 import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
