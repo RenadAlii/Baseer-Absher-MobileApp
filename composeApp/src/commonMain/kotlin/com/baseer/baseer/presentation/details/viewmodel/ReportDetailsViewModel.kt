@@ -2,6 +2,8 @@ package com.baseer.baseer.presentation.details.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import baseer.composeapp.generated.resources.Res
+import baseer.composeapp.generated.resources.report_sent_success
 import com.baseer.baseer.domain.model.LocationData
 import com.baseer.baseer.presentation.components.fileupload.FileUploadErrorKeys
 import com.baseer.baseer.presentation.components.fileupload.UploadFile
@@ -9,12 +11,16 @@ import com.baseer.baseer.presentation.components.fileupload.UploadState
 import com.baseer.baseer.presentation.components.fileupload.isSupportedFileType
 import com.baseer.baseer.presentation.components.model.LocationBoxUiState
 import com.baseer.baseer.presentation.components.model.ReportType
+import com.baseer.baseer.presentation.components.topSnackbar.SnackbarController.sendSnackbarEvent
+import com.baseer.baseer.presentation.components.topSnackbar.SnackbarEvent
+import com.baseer.baseer.presentation.utils.SingleEvent
 import dev.icerock.moko.permissions.PermissionState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
 import kotlin.math.absoluteValue
 
 class ReportDetailsViewModel : ViewModel() {
@@ -118,11 +124,11 @@ class ReportDetailsViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // TODO: Call API with state data
                 delay(2000) // Simulate API call
 
                 // Success - Navigate or show success
-                _state.update { it.copy(isSending = false) }
+                _state.update { it.copy(isSending = false, navigateToHome = SingleEvent(Unit)) }
+                showSuccessSnackbar()
             } catch (e: Exception) {
                 _state.update {
                     it.copy(
@@ -131,6 +137,16 @@ class ReportDetailsViewModel : ViewModel() {
                     )
                 }
             }
+        }
+    }
+
+    private fun showSuccessSnackbar() {
+        viewModelScope.launch {
+            sendSnackbarEvent(
+                event = SnackbarEvent.Show.Success(
+                    message = Res.string.report_sent_success
+                )
+            )
         }
     }
 

@@ -5,6 +5,7 @@ import com.baseer.baseer.presentation.components.fileupload.UploadFile
 import com.baseer.baseer.presentation.components.fileupload.UploadState
 import com.baseer.baseer.presentation.components.model.LocationBoxUiState
 import com.baseer.baseer.presentation.components.model.ReportType
+import com.baseer.baseer.presentation.utils.SingleEvent
 import dev.icerock.moko.permissions.PermissionState
 
 data class ReportDetailsState(
@@ -20,6 +21,7 @@ data class ReportDetailsState(
     val locationBoxUiState: LocationBoxUiState = LocationBoxUiState.Loading,
     val files: List<UploadFile> = emptyList(),
     val maxFiles: Int = 3,
+    val navigateToHome: SingleEvent<Unit>? = null,
     val maxFileSizeMb: Int = 10,
 ) {
     val showPlateNumberField = reportType?.requiresPlateNumber ?: false

@@ -1,5 +1,6 @@
 package com.baseer.baseer.presentation.details.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import baseer.composeapp.generated.resources.*
@@ -35,6 +38,7 @@ import com.baseer.baseer.presentation.details.viewmodel.ReportDetailsState
 import com.baseer.baseer.presentation.details.viewmodel.ReportDetailsViewModel
 import com.baseer.baseer.presentation.navigation.AppScreens
 import com.baseer.baseer.presentation.utils.PickerType
+import com.baseer.baseer.presentation.utils.extensions.noRippleEffect
 import com.baseer.baseer.presentation.utils.rememberFilePickerLauncher
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -49,6 +53,10 @@ fun ReportDetailsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val reportType = state.reportType
+
+    state.navigateToHome?.handel {
+        navController.navigate(AppScreens.Home)
+    }
 
     LaunchedEffect(reportTypeId) {
         viewModel.onEvent(ReportDetailsEvent.LoadInitialData(reportTypeId, initialLocation))
@@ -85,6 +93,9 @@ fun ReportDetailsScreen(
                 )
             }
         )
+        if(state.isSending){
+            LoadingOverlay()
+        }
     } else {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
@@ -216,6 +227,60 @@ private fun ReportDetailsContent(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun CircleLoadingView(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .background(Color.White.copy(alpha = 0.16f))
+            .fillMaxSize()
+            .noRippleEffect {},
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            color = Color(0xFF1B8354),
+            modifier = Modifier
+                .width(66.dp)
+                .padding(4.dp),
+            trackColor = Color(0xFF919592)
+        )
+    }
+}
+
+@Composable
+fun LoadingOverlay(
+    modifier: Modifier = Modifier
+) {
+    Dialog(
+        onDismissRequest = {},
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false,
+            usePlatformDefaultWidth = false
+        )
+    ) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(
+                    Color.White.copy(
+                        alpha = .1f
+                    )
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                color = Color(0xFF1B8354),
+                modifier = Modifier
+                    .width(66.dp)
+                    .padding(4.dp),
+                trackColor = Color(0xFF919592)
+            )
         }
     }
 }

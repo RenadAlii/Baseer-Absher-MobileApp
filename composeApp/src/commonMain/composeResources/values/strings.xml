@@ -89,4 +89,5 @@
     <string name="file_picker_photos_desc">Choose images from your gallery</string>
     <string name="file_picker_files">Files</string>
     <string name="file_picker_files_desc">Select PDF files or documents</string>
+    <string name="report_sent_success">The report has been submitted successfully</string>
 </resources>

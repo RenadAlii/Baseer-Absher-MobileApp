@@ -93,4 +93,6 @@
     <string name="file_picker_photos_desc">اختر صور من الاستوديو</string>
     <string name="file_picker_files">الملفات</string>
     <string name="file_picker_files_desc">اختر ملفات PDF أو مستندات</string>
+    <string name="report_sent_success">تم إرسال البلاغ بنجاح</string>
+
 </resources>
