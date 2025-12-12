@@ -1,36 +1,59 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+<div align="center">
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-    - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-    - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-      For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-      the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-      Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-      folder is the appropriate location.
+# 🚀 بصّير
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org)
+[![Compose](https://img.shields.io/badge/Compose_Multiplatform-1.7-4285F4?logo=jetpackcompose&logoColor=white)](https://www.jetbrains.com/compose-multiplatform/)
+[![Android](https://img.shields.io/badge/Android-✓-3DDC84?logo=android&logoColor=white)]()
+[![iOS](https://img.shields.io/badge/iOS-✓-000000?logo=apple&logoColor=white)]()
 
-### Build and Run Android Application
-
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
-
-### Build and Run iOS Application
-
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+</div>
 
 ---
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## 🎬 Demo
+
+<div align="center">
+<img src="https://github.com/user-attachments/assets/0401affa-8e57-43c3-b815-17a7bac79be5" width="280"/>
+</div>
+
+---
+
+## 📁 Structure
+
+```
+composeApp/src/
+├── commonMain/     # Shared code
+├── androidMain/    # Android specific
+└── iosMain/        # iOS specific
+
+iosApp/             # iOS entry point
+```
+
+---
+
+## 🔗 Backend
+
+| | |
+|---|---|
+| 📦 **Repo** | [Baseer-backend](https://github.com/Baseer-absher/Basser-backend) |
+
+---
+
+## 🚀 Run
+
+**Android**
+```bash
+./gradlew :composeApp:installDebug
+```
+
+**iOS**
+```
+Open iosApp/ in Xcode → Run
+```
+
+---
+
+## 📚 Learn More
+
+[Kotlin Multiplatform Docs](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)
