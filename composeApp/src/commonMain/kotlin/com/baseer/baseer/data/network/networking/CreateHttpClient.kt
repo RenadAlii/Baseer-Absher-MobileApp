@@ -1,13 +1,11 @@
 package com.baseer.baseer.data.network.networking
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.HttpClientEngine
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.logging.SIMPLE
-import io.ktor.serialization.kotlinx.json.json
+import io.ktor.client.*
+import io.ktor.client.engine.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
 
@@ -19,23 +17,20 @@ private fun createHttpClient(httpClientEngine: HttpClientEngine): HttpClient {
                 ignoreUnknownKeys = true
                 isLenient = true
             })
-
         }
-        install(Logging) { logger = Logger.SIMPLE }
+        install(Logging) {
+            logger = Logger.SIMPLE
+            level = LogLevel.ALL
+        }
     }
 }
 
-fun createNYSClient(
-    httpClientEngineProvider: HttpClientEngineProvider,
-    apiKeyProvider: ApiKeyProvider
+fun createEmergencyClient(
+    httpClientEngineProvider: HttpClientEngineProvider
 ): HttpClient {
     return createHttpClient(httpClientEngineProvider.client).config {
         defaultRequest {
-            url("https://api.nytimes.com/svc/")
-        }
-        install(ApiKeyPlugin) {
-            apiKey = apiKeyProvider.apiKey
+            url("https://emergency-api-app-eghdbbgphye5ctfe.centralus-01.azurewebsites.net/")
         }
     }
 }
-

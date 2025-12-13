@@ -1,5 +1,8 @@
 package com.baseer.baseer.di
 
+import com.baseer.baseer.data.network.networking.HttpClientEngineProvider
+import com.baseer.baseer.data.network.networking.createEmergencyClient
+import com.baseer.baseer.data.repo.EmergencyRepository
 import com.baseer.baseer.domain.service.GeocoderService
 import com.baseer.baseer.domain.service.GeocoderServiceImpl
 import com.baseer.baseer.presentation.details.viewmodel.ReportDetailsViewModel
@@ -19,5 +22,9 @@ val appModule = module {
     viewModelOf(::ReportSelectionViewModel)
     viewModelOf(::LocationPickerViewModel)
     viewModelOf(::ReportDetailsViewModel)
+    single<HttpClientEngineProvider> { HttpClientEngineProvider() }
+
+    single { createEmergencyClient(get()) }
+    single { EmergencyRepository(get()) }
 }
 

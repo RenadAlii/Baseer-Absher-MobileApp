@@ -31,7 +31,6 @@ val SUPPORTED_MIME_TYPES = listOf(
 
 fun isSupportedFileType(mimeType: String) = SUPPORTED_MIME_TYPES.contains(mimeType.lowercase())
 
-// Error Keys for String Resources
 object FileUploadErrorKeys {
     const val FILE_TYPE_NOT_SUPPORTED = "file_type_not_supported"
     const val FILE_TOO_LARGE = "file_too_large"

@@ -18,24 +18,18 @@ actual fun rememberFilePickerLauncher(
 ): FilePickerState {
     val context = LocalContext.current
 
-    // Files Picker
     val filesLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenMultipleDocuments()
     ) { uris ->
         val files = uris.mapNotNull { it.toUploadFile(context) }
-        if (files.isNotEmpty()) {
-            onFilesSelected(files)
-        }
+        if (files.isNotEmpty()) onFilesSelected(files)
     }
 
-    // Photos Picker
     val photosLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia()
     ) { uris ->
         val files = uris.mapNotNull { it.toUploadFile(context) }
-        if (files.isNotEmpty()) {
-            onFilesSelected(files)
-        }
+        if (files.isNotEmpty()) onFilesSelected(files)
     }
 
     return remember {
@@ -47,13 +41,15 @@ actual fun rememberFilePickerLauncher(
                 photosLauncher.launch(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                 )
-            }
+            },
         )
     }
 }
 
 private fun Uri.toUploadFile(context: Context): UploadFile? {
     return try {
+        val bytes = context.contentResolver.openInputStream(this)?.use { it.readBytes() }
+
         context.contentResolver.query(this, null, null, null, null)?.use { cursor ->
             if (cursor.moveToFirst()) {
                 val name = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
@@ -67,11 +63,13 @@ private fun Uri.toUploadFile(context: Context): UploadFile? {
                     name = name,
                     size = size,
                     mimeType = mimeType,
-                    path = this.toString()
+                    path = this.toString(),
+                    bytes = bytes
                 )
             } else null
         }
     } catch (e: Exception) {
+        e.printStackTrace()
         null
     }
 }

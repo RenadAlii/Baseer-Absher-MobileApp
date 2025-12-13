@@ -3,6 +3,7 @@ package com.baseer.baseer.presentation.utils
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.baseer.baseer.presentation.components.fileupload.UploadFile
+import com.baseer.baseer.presentation.components.fileupload.UploadState
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
@@ -26,60 +27,48 @@ actual fun rememberFilePickerLauncher(
 
     return FilePickerState(
         launchFiles = { launcher.launchDocumentPicker() },
-        launchPhotos = { launcher.launchPhotoPicker() }
+        launchPhotos = { launcher.launchPhotoPicker() },
     )
 }
 
 @OptIn(ExperimentalForeignApi::class)
 private class FilePickerLauncher(
     private val onFilesSelected: (List<UploadFile>) -> Unit
-) : NSObject(), UIDocumentPickerDelegateProtocol, PHPickerViewControllerDelegateProtocol {
+) : NSObject(), UIDocumentPickerDelegateProtocol, PHPickerViewControllerDelegateProtocol,
+    UIImagePickerControllerDelegateProtocol, UINavigationControllerDelegateProtocol {
 
     fun launchDocumentPicker() {
         val types = listOf(UTTypePDF, UTTypeCommaSeparatedText, UTTypeImage)
         val picker = UIDocumentPickerViewController(forOpeningContentTypes = types, asCopy = true)
         picker.allowsMultipleSelection = true
         picker.delegate = this
-
         getRootViewController()?.presentViewController(picker, animated = true, completion = null)
     }
 
-    override fun documentPicker(
-        controller: UIDocumentPickerViewController,
-        didPickDocumentsAtURLs: List<*>
-    ) {
+    override fun documentPicker(controller: UIDocumentPickerViewController, didPickDocumentsAtURLs: List<*>) {
         val files = (didPickDocumentsAtURLs as? List<NSURL>)?.mapNotNull { url ->
             val isAccessing = url.startAccessingSecurityScopedResource()
             val file = url.toUploadFile()
-            if (isAccessing) {
-                url.stopAccessingSecurityScopedResource()
-            }
+            if (isAccessing) url.stopAccessingSecurityScopedResource()
             file
         } ?: emptyList()
-
-        if (files.isNotEmpty()) {
-            onFilesSelected(files)
-        }
+        if (files.isNotEmpty()) onFilesSelected(files)
     }
 
     override fun documentPickerWasCancelled(controller: UIDocumentPickerViewController) {
-
     }
 
     fun launchPhotoPicker() {
-        val configuration = PHPickerConfiguration(PHPhotoLibrary.sharedPhotoLibrary())
-        configuration.filter = PHPickerFilter.imagesFilter
-        configuration.selectionLimit = 10
-
-        val picker = PHPickerViewController(configuration = configuration)
+        val config = PHPickerConfiguration(PHPhotoLibrary.sharedPhotoLibrary())
+        config.selectionLimit = 10
+        config.filter = PHPickerFilter.imagesFilter
+        val picker = PHPickerViewController(configuration = config)
         picker.delegate = this
-
         getRootViewController()?.presentViewController(picker, animated = true, completion = null)
     }
 
     override fun picker(picker: PHPickerViewController, didFinishPicking: List<*>) {
         picker.dismissViewControllerAnimated(true, completion = null)
-
         val results = didFinishPicking as? List<PHPickerResult> ?: return
         if (results.isEmpty()) return
 
@@ -88,81 +77,63 @@ private class FilePickerLauncher(
 
         results.forEach { result ->
             if (result.itemProvider.hasItemConformingToTypeIdentifier(UTTypeImage.identifier)) {
-                result.itemProvider.loadFileRepresentationForTypeIdentifier(
-                    typeIdentifier = UTTypeImage.identifier
-                ) { url, error ->
-                    if (url != null) {
-                        copyToTempAndCreateFile(url)?.let { file ->
-                            // إضافة الملف للقائمة بأمان
-                            // ملاحظة: هذا الكول باك يعمل في الخلفية، لذا نجمع البيانات بحذر
-                            // ولكن للإضافة للقائمة المشتركة يفضل العودة للـ Main Thread لاحقاً
-                            dispatch_async(dispatch_get_main_queue()) {
-                                files.add(file)
-                                remaining--
-                                checkIfDone(remaining, files)
-                            }
-                        } ?: run {
-                            dispatch_async(dispatch_get_main_queue()) {
-                                remaining--
-                                checkIfDone(remaining, files)
-                            }
-                        }
-                    } else {
-                        dispatch_async(dispatch_get_main_queue()) {
-                            remaining--
-                            checkIfDone(remaining, files)
+                result.itemProvider.loadFileRepresentationForTypeIdentifier(UTTypeImage.identifier) { url, _ ->
+                    val file = if (url != null) copyToTempAndCreateFile(url) else null
+
+                    dispatch_async(dispatch_get_main_queue()) {
+                        if (file != null) files.add(file)
+                        remaining--
+                        if (remaining == 0 && files.isNotEmpty()) {
+                            onFilesSelected(files.toList())
                         }
                     }
                 }
             } else {
                 remaining--
-                checkIfDone(remaining, files)
+                if (remaining == 0 && files.isNotEmpty()) {
+                    onFilesSelected(files.toList())
+                }
             }
         }
     }
 
-    private fun checkIfDone(remaining: Int, files: List<UploadFile>) {
-        if (remaining == 0 && files.isNotEmpty()) {
-            onFilesSelected(files.toList())
+    fun launchCamera() {
+        if (UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypeCamera)) {
+            val picker = UIImagePickerController()
+            picker.sourceType = UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypeCamera
+            picker.delegate = this
+            picker.allowsEditing = false
+            getRootViewController()?.presentViewController(picker, animated = true, completion = null)
         }
     }
-}
 
-// ===== Helper Functions =====
+    override fun imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo: Map<Any?, *>) {
+        picker.dismissViewControllerAnimated(true, completion = null)
 
-@OptIn(ExperimentalForeignApi::class)
-private fun NSData.toByteArray(): ByteArray {
-    val length = this.length.toInt()
-    if (length == 0) return ByteArray(0)
-
-    val bytes = ByteArray(length)
-    bytes.usePinned { pinned ->
-        memcpy(pinned.addressOf(0), this.bytes, this.length)
+        val image = didFinishPickingMediaWithInfo[UIImagePickerControllerOriginalImage] as? UIImage
+        if (image != null) {
+            saveImageToTempAndCreateFile(image)?.let {
+                onFilesSelected(listOf(it))
+            }
+        }
     }
-    return bytes
+    override fun imagePickerControllerDidCancel(picker: UIImagePickerController) {
+        picker.dismissViewControllerAnimated(true, completion = null)
+    }
 }
 
 @OptIn(ExperimentalForeignApi::class)
-private fun NSURL.toUploadFile(): UploadFile? {
+private fun saveImageToTempAndCreateFile(image: UIImage): UploadFile? {
     return try {
-        val name = lastPathComponent ?: "unknown"
-        val path = this.path ?: return null
+        val data = UIImageJPEGRepresentation(image, 0.8) ?: return null
+        val fileName = "camera_${NSUUID().UUIDString}.jpg"
+        val tempDir = NSTemporaryDirectory()
+        val destPath = "$tempDir$fileName"
 
-        val fileManager = NSFileManager.defaultManager
-        val attrs = fileManager.attributesOfItemAtPath(path, error = null)
-        val size = (attrs?.get(NSFileSize) as? NSNumber)?.longValue ?: 0L
+        data.writeToFile(destPath, true)
+        val destUrl = NSURL.fileURLWithPath(destPath)
 
-        val data = NSData.dataWithContentsOfFile(path)
-        val bytes = data?.toByteArray()
-
-        UploadFile(
-            id = NSUUID().UUIDString,
-            name = name,
-            size = size,
-            mimeType = getMimeType(name),
-            path = path,
-            bytes = bytes
-        )
+        destUrl.toUploadFile()
     } catch (e: Exception) {
         e.printStackTrace()
         null
@@ -178,14 +149,50 @@ private fun copyToTempAndCreateFile(sourceUrl: NSURL): UploadFile? {
         val destUrl = NSURL.fileURLWithPath(destPath)
 
         val fileManager = NSFileManager.defaultManager
-
         if (fileManager.fileExistsAtPath(destPath)) {
             fileManager.removeItemAtPath(destPath, error = null)
         }
 
         fileManager.copyItemAtURL(sourceUrl, destUrl, error = null)
-
         destUrl.toUploadFile()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun NSData.toByteArray(): ByteArray {
+    val length = this.length.toInt()
+    if (length == 0) return ByteArray(0)
+    val bytes = ByteArray(length)
+    bytes.usePinned { pinned ->
+        memcpy(pinned.addressOf(0), this.bytes, this.length)
+    }
+    return bytes
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun NSURL.toUploadFile(): UploadFile? {
+    return try {
+        val name = lastPathComponent ?: "unknown"
+        val path = this.path ?: return null
+        val fileManager = NSFileManager.defaultManager
+        val attrs = fileManager.attributesOfItemAtPath(path, error = null)
+        val size = (attrs?.get(NSFileSize) as? NSNumber)?.longValue ?: 0L
+
+        val data = NSData.dataWithContentsOfFile(path)
+        val bytes = data?.toByteArray()
+
+        UploadFile(
+            id = NSUUID().UUIDString,
+            name = name,
+            size = size,
+            mimeType = getMimeType(name),
+            path = path,
+            state = UploadState.Uploading,
+            bytes = bytes
+        )
     } catch (e: Exception) {
         e.printStackTrace()
         null

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import baseer.composeapp.generated.resources.Res
 import baseer.composeapp.generated.resources.report_sent_success
+import com.baseer.baseer.data.repo.EmergencyRepository
 import com.baseer.baseer.domain.model.LocationData
 import com.baseer.baseer.presentation.components.fileupload.FileUploadErrorKeys
 import com.baseer.baseer.presentation.components.fileupload.UploadFile
@@ -20,10 +21,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.StringResource
 import kotlin.math.absoluteValue
 
-class ReportDetailsViewModel : ViewModel() {
+class ReportDetailsViewModel(
+    private val emergencyRepository: EmergencyRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(
         ReportDetailsState(
@@ -120,20 +122,43 @@ class ReportDetailsViewModel : ViewModel() {
     }
 
     private fun sendReport() {
+        val currentState = _state.value
+
+        if (!currentState.isLocationValid) {
+            _state.update { it.copy(errorDialogMessage = "الموقع غير صالح") }
+            return
+        }
+
         _state.update { it.copy(isSending = true) }
 
         viewModelScope.launch {
-            try {
-                delay(2000) // Simulate API call
+            val successfulFiles = currentState.files
+            val imageBytes = successfulFiles.mapNotNull { it.bytes }
+            val imageNames = successfulFiles.map { it.name }
+            val result = emergencyRepository.createEmergency(
+                description = currentState.description,
+                images = imageBytes,
+                imageNames = imageNames,
+                emergencyType = currentState.reportType?.id?.toIntOrNull() ?: 0,
+                licensePlate = currentState.plateNumber,
+                latitude = currentState.location.latitude,
+                longitude = currentState.location.longitude
+            )
 
-                // Success - Navigate or show success
-                _state.update { it.copy(isSending = false, navigateToHome = SingleEvent(Unit)) }
-                showSuccessSnackbar()
-            } catch (e: Exception) {
+
+            result.onSuccess {
                 _state.update {
                     it.copy(
                         isSending = false,
-                        errorDialogMessage = e.message,
+                        navigateToHome = SingleEvent(Unit)
+                    )
+                }
+                showSuccessSnackbar()
+            }.onFailure { error ->
+                _state.update {
+                    it.copy(
+                        isSending = false,
+                        errorDialogMessage = error.message ?: "حدث خطأ أثناء إرسال البلاغ"
                     )
                 }
             }
